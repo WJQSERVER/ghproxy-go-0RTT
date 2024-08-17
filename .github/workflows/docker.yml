@@ -35,5 +35,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: | 
-            wjqserver/ghproxy0RTT:${{ env.VERSION }}
-            wjqserver/ghproxy0RTT:latest
+            wjqserver/ghproxy-0rtt:${{ env.VERSION }}
+            wjqserver/ghproxy-0rtt:latest
