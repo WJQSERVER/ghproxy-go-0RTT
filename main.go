@@ -37,7 +37,7 @@ func main() {
 
 	router.NoRoute(handler)
 
-	err := router.Run(fmt.Sprintf("%s:%d", port))
+	err := router.Run(fmt.Sprintf(":%d", port))
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
