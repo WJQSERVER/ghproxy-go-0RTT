@@ -7,12 +7,13 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+
 	"github.com/gin-gonic/gin"
 )
 
 const (
 	sizeLimit = 1024 * 1024 * 1024 * 10
-	host      = "127.0.0.1"
+	host      = "0.0.0.0"
 	port      = 8080
 )
 
