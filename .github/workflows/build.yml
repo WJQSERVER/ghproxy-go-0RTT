@@ -1,0 +1,36 @@
+name: 编译主程序
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Load VERSION
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.23.0
+      - name: Build
+        run: go build -o ghproxy ./main.go
+      - name: Package
+        run: sudo tar -czvf ghproxy.tar.gz ./ghproxy # 将可执行文件打包为 tar.gz
+      - name: Upload to GitHub Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ghproxy
+          path: ./ghproxy.tar.gz
+      - name: 上传至Release
+        id: create_release
+        uses: ncipollo/release-action@v1
+        with:
+          name: ${{ env.VERSION }}
+          artifacts: ./ghproxy.tar.gz, ./ghproxy
+          token: ${{ secrets.REPO_TOKEN }}
+          tag: ${{ env.VERSION }}
+          allowUpdates: true
+        env:
+          export PATH: $PATH:/usr/local/go/bin
