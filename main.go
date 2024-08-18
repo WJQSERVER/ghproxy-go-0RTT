@@ -37,7 +37,7 @@ func main() {
 
 	router.NoRoute(handler)
 
-	err := router.Run(fmt.Sprintf(":%d", port))
+	err := router.Run(fmt.Sprintf("%s:%d", host, port))
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
@@ -82,15 +82,11 @@ func proxy(c *gin.Context, u string) {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		return
 	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-		}
-	}(resp.Body)
+	defer resp.Body.Close()
 
 	if contentLength, ok := resp.Header["Content-Length"]; ok {
 		if size, err := strconv.Atoi(contentLength[0]); err == nil && size > sizeLimit {
-			c.Redirect(http.StatusFound, u+c.Request.URL.String())
+			c.Redirect(http.StatusFound, u)
 			return
 		}
 	}
@@ -102,15 +98,6 @@ func proxy(c *gin.Context, u string) {
 	for key, values := range resp.Header {
 		for _, value := range values {
 			c.Header(key, value)
-		}
-	}
-
-	if location := resp.Header.Get("Location"); location != "" {
-		if checkURL(location) != nil {
-			c.Header("Location", "/"+location)
-		} else {
-			proxy(c, location)
-			return
 		}
 	}
 

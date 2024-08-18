@@ -75,7 +75,7 @@
 :80 {
     reverse_proxy {
         to 127.0.0.1:8080
-        #import header_realip
+        import header_realip
     }
     import log ghproxy
     import cache 0s 600s
