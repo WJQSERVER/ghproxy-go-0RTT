@@ -140,13 +140,13 @@
             var formattedLink = "";
 
             if (githubLinkInput.value.startsWith("https://github.com/") || githubLinkInput.value.startsWith("http://github.com/")) {
-                formattedLink = "https://" + currentHost + "/https://github.com" + githubLinkInput.value.substring(githubLinkInput.value.indexOf("/", 8));
+                formattedLink = "https://" + currentHost + "/github.com" + githubLinkInput.value.substring(githubLinkInput.value.indexOf("/", 8));
             } else if (githubLinkInput.value.startsWith("github.com/")) {
-                formattedLink = "https://" + currentHost + "/https://github.com" + githubLinkInput.value;
+                formattedLink = "https://" + currentHost + "/" + githubLinkInput.value;
             } else if (githubLinkInput.value.startsWith("https://raw.githubusercontent.com/") || githubLinkInput.value.startsWith("http://raw.githubusercontent.com/")) {
-                formattedLink = "https://" + currentHost + githubLinkInput.value.substring(githubLinkInput.value.indexOf("/https://raw.githubusercontent.com", 7));
+                formattedLink = "https://" + currentHost + githubLinkInput.value.substring(githubLinkInput.value.indexOf("/", 7));
             } else if (githubLinkInput.value.startsWith("raw.githubusercontent.com/")) {
-                formattedLink = "https://" + currentHost + "/https://raw.githubusercontent.com" + githubLinkInput.value;
+                formattedLink = "https://" + currentHost + "/" + githubLinkInput.value;
             } else if (!githubLinkInput.value.trim()) {
                 alert('请输入有效的GitHub链接');
             }
