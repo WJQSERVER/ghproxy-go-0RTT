@@ -25,3 +25,17 @@ docker run -p 8078:80 -v ./ghproxy/log/run:/data/ghproxy/log -v ./ghproxy/log/ca
 - Docker-Compose
 
 参看[docker-compose.yml](https://github.com/WJQSERVER/ghproxy-go-0RTT/blob/main/docker-compose.yml)
+
+# Caddy反代配置
+
+```
+example.com {
+    reverse_proxy {
+        to 172.20.20.221:80
+        header_up X-Real-IP {remote_host}	    
+        header_up X-Real-IP {http.request.header.CF-Connecting-IP}
+        header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
+        header_up X-Forwarded-Proto {http.request.header.CF-Visitor}
+    }    
+}
+```
