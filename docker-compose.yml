@@ -1,0 +1,10 @@
+version: '3.9'
+services:
+    ghproxy-0rtt:
+        image: wjqserver/ghproxy-0rtt:latest
+        restart: always
+        volumes:
+            - './ghproxy/log/caddy:/data/caddy/log'
+            - './ghproxy/log/run:/data/ghproxy/log'
+        ports:
+            - '8078:80'
