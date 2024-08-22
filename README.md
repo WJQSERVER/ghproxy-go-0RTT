@@ -33,7 +33,7 @@ docker run -p 8078:80 -v ./ghproxy/log/run:/data/ghproxy/log -v ./ghproxy/log/ca
 ```
 example.com {
     reverse_proxy {
-        to 172.20.20.221:80
+        to 127.0.0.1:8078
         header_up X-Real-IP {remote_host}	    
         header_up X-Real-IP {http.request.header.CF-Connecting-IP}
         header_up X-Forwarded-For {http.request.header.CF-Connecting-IP}
