@@ -2,6 +2,8 @@
 
 APACHE2.0 LICENSE VERSION
 
+弃用[原实现](https://github.com/0-RTT/ghproxy-go)过于依赖jiasu.in网页的缺点,并增加Docker支持,并增加了高频请求限制,以避免CC
+
 主程序 Fork & Sync From [0RTT/ghproxy-go](https://github.com/0-RTT/ghproxy-go)
 
 页面及其余部分来自 [WJQSERVER-STUDIO/ghproxy-go](https://github.com/WJQSERVER-STUDIO/ghproxy-go)
