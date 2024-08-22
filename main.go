@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	sizeLimit = 1024 * 1024 * 1024 * 10
+	sizeLimit = 1024 * 1024 * 1024 * 1
 	host      = "127.0.0.1"
 	port      = 8080
 )
@@ -32,7 +32,14 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "https://jiasu.in")
+		c.Data(http.StatusOK, "text/html; charset=utf-8", []byte(`
+			<h1>Service is running.<br>
+			Powered by Github - <a href='https://github.com/0-RTT/ghproxy-go'>0-RTT/ghproxy-go</a>.</h1>
+		`))
+	})
+
+	router.GET("/favicon.ico", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "https://jiasu.in/favicon.ico")
 	})
 
 	router.NoRoute(handler)
@@ -45,12 +52,12 @@ func main() {
 
 func handler(c *gin.Context) {
 	rawPath := strings.TrimPrefix(c.Request.URL.RequestURI(), "/")
+	re := regexp.MustCompile(`^(http:|https:)?/?/?(.*)`)
+	matches := re.FindStringSubmatch(rawPath)
 
-	if !strings.HasPrefix(rawPath, "http") {
-		rawPath = "https://" + rawPath
-	}
+	rawPath = "https://" + matches[2]
 
-	matches := checkURL(rawPath)
+	matches = checkURL(rawPath)
 	if matches == nil {
 		c.String(http.StatusForbidden, "Invalid input.")
 		return
@@ -86,7 +93,8 @@ func proxy(c *gin.Context, u string) {
 
 	if contentLength, ok := resp.Header["Content-Length"]; ok {
 		if size, err := strconv.Atoi(contentLength[0]); err == nil && size > sizeLimit {
-			c.Redirect(http.StatusFound, u)
+			finalURL := resp.Request.URL.String()
+			c.Redirect(http.StatusFound, finalURL)
 			return
 		}
 	}
