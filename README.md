@@ -16,6 +16,12 @@ git clone https://ghproxy0rtt.1888866.xyz/github.com/WJQSERVER-STUDIO/ghproxy-go
 
 # Docker部署
 
+- Docker-cli
+
 ```
 docker run -p 8078:80 -v ./ghproxy/log/run:/data/ghproxy/log -v ./ghproxy/log/caddy:/data/caddy/log --restart always wjqserver/ghproxy-0rtt
 ```
+
+- Docker-Compose
+
+参看[docker-compose.yml](https://github.com/WJQSERVER/ghproxy-go-0RTT/blob/main/docker-compose.yml)
