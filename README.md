@@ -1,5 +1,7 @@
 # GhProxy-Go-0RTT
 
+![pull](https://img.shields.io/docker/pulls/wjqserver/ghproxy-0rtt.svg)
+
 APACHE2.0 LICENSE VERSION
 
 弃用[原实现](https://github.com/0-RTT/ghproxy-go)过于依赖的jiasu.in网页,更换前端界面,并增加Docker支持,并增加了高频请求限制,以避免CC
