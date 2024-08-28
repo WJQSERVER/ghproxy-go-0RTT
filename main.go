@@ -32,9 +32,9 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", func(c *gin.Context) {
-            c.Redirect(http.StatusFound, "https://ghproxy0rtt.1888866.xyz/")
-        })
-	
+		c.Redirect(http.StatusFound, "https://ghproxy0rtt.1888866.xyz/")
+	})
+
 	router.NoRoute(handler)
 
 	err := router.Run(fmt.Sprintf("%s:%d", host, port))
