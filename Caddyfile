@@ -41,7 +41,7 @@
         zstd best
         br 5 v2
         gzip 5
-        minimum_length 512
+        minimum_length 256
     }
 }
 
