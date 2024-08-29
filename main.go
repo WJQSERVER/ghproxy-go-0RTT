@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -69,15 +70,22 @@ func proxy(c *gin.Context, u string) {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		return
 	}
+	defer c.Request.Body.Close()
 
 	for key, values := range c.Request.Header {
 		for _, value := range values {
 			req.Header.Add(key, value)
 		}
 	}
-	req.Header.Del("Host")
+	//req.Header.Del("Host")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
 
-	resp, err := http.DefaultClient.Do(req)
+	//resp, err := http.DefaultClient.Do(req)
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+	resp, err := client.Do(req)
+	//resp, err = client.Do(req)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		return
