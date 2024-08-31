@@ -28,7 +28,7 @@ var (
 
 func main() {
 	//加载配置
-	config, err := config.LoadConfig("./config/config.yaml")
+	config, err := config.LoadConfig("/data/ghproxy/config/config.yaml")
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 		return
