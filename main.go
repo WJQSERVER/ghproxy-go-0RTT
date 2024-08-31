@@ -46,6 +46,7 @@ func main() {
 		log.SetOutput(logFile)
 		log.Println("Log Initialization Complete")
 	}
+
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 
@@ -59,6 +60,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
+	fmt.Println("Program finished")
 }
 
 //reserved for future use
