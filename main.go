@@ -30,17 +30,17 @@ func main() {
 	//加载配置
 	config, err := config.LoadConfig("/data/ghproxy/config/config.yaml")
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		fmt.Printf("Failed to load config: %v", err)
 		return
 	}
-	log.Printf("Loaded config: %v", config)
+	fmt.Printf("Loaded config: %v", config)
 
 	//初始化日志
 	logFile, err := os.OpenFile(config.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
-		log.Printf("Log Initialization Failed: > %s", err)
-		log.Printf("Failed to open log file: %s", config.LogFilePath)
-		log.Printf("Please check the log file path and permissions.")
+		fmt.Printf("Log Initialization Failed: > %s", err)
+		fmt.Printf("Failed to open log file: %s", config.LogFilePath)
+		fmt.Printf("Please check the log file path and permissions.")
 	} else {
 		defer logFile.Close()
 		log.SetOutput(logFile)
