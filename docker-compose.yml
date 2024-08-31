@@ -6,5 +6,6 @@ services:
         volumes:
             - './ghproxy/log/caddy:/data/caddy/log'
             - './ghproxy/log/run:/data/ghproxy/log'
+            - './ghproxy/config:/data/ghproxy/config'
         ports:
             - '8078:80'
