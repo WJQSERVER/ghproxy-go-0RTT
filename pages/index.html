@@ -113,6 +113,14 @@
         pre:hover .copy-button {
             opacity: 1;
         }
+
+        #visitor-info {
+            margin-top: 10px;
+            text-align: center;
+            line-height: 0.5;
+        }
+
+        
     </style>
 </head>
 
@@ -129,7 +137,7 @@
             <pre id="formattedLinkOutput"></pre>
         </div>
         <div class="tips">
-            <p>GitHub链接带不带协议头均可，支持release、archive、文件与Git clone，转换后链接均可使用</a>。</p>       
+            <p>GitHub链接带不带协议头均可，支持release、archive、文件与Git clone，转换后链接均可使用</a>。</p>
         </div>
     </div>
 
@@ -176,6 +184,29 @@
         GitHub仓库地址：<a
             href="https://github.com/WJQSERVER/ghproxy-go-0RTT">https://github.com/WJQSERVER/ghproxy-go-0RTT</a>
     </p>
+    <div id="visitor-info" style="text-align: center; margin-top: 15px;">
+        <p>您的IP地址: <span id="visitor-ip"></span></p>
+        <p>当前位置: <span id="visitor-country"></span> <img id="visitor-flag" src="" alt="" width="24" height="16"></p>
+    </div>
+    <script>
+        fetch('https://ip.1888866.xyz/ip-lookup')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('网络响应失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById('visitor-ip').textContent = data.ip;
+                document.getElementById('visitor-country').textContent = data.country_name;
+                document.getElementById('visitor-flag').src = `https://flagcdn.com/w20/${data.country_code.toLowerCase()}.png`;
+            })
+            .catch(error => {
+                console.error('获取地理位置信息失败:', error);
+                const visitorInfo = document.getElementById('visitor-info');
+                visitorInfo.innerHTML = '<p>无法获取您的地理位置信息，请稍后再试。</p>';
+            });
+    </script>
 </footer>
 
 </html>
