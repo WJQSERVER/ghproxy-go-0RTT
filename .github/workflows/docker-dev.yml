@@ -31,7 +31,7 @@ jobs:
       - name: 构建镜像
         uses: docker/build-push-action@v5
         with:
-          file: ./Dockerfile
+          file: ./DEV-Dockerfile
           platforms: linux/amd64
           push: true
           tags: | 
