@@ -1,6 +1,7 @@
 # GhProxy-Go-0RTT
 
 ![pull](https://img.shields.io/docker/pulls/wjqserver/ghproxy-0rtt.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/WJQSERVER/ghproxy-go-0RTT)](https://goreportcard.com/report/github.com/WJQSERVER/ghproxy-go-0RTT)
 
 使用Go实现的GHProxy,支持Git clone等文件拉取,支持Docker部署,支持速率限制
 
