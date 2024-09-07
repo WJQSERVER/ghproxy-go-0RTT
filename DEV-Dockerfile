@@ -5,7 +5,7 @@ RUN mkdir -p /data/ghproxy/config
 RUN mkdir -p /data/ghproxy/log
 RUN wget -O /data/www/index.html https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/pages/index.html
 RUN wget -O /data/www/favicon.ico https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/pages/favicon.ico
-RUN wget -O /data/caddy/Caddyfile https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/Caddyfile
+RUN wget -O /data/caddy/Caddyfile https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/DEV-Caddyfile
 RUN VERSION=$(curl -s https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/DEV-VERSION) && \
     wget -O /data/ghproxy/ghproxy https://github.com/WJQSERVER/ghproxy-go-0RTT/releases/download/$VERSION/ghproxy
 RUN wget -O /data/ghproxy/config.yaml https://raw.githubusercontent.com/WJQSERVER/ghproxy-go-0RTT/main/config/config.yaml
