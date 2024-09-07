@@ -104,12 +104,12 @@
             header_up Authorization {http.request.header.Authorization}
         }
 
-        handle_errors 301 302 307 {
-            reverse_proxy {
+        handle_errors {
+            @redirects `{err.status_code} in [301, 302, 307]`
+            reverse_proxy @redirects {
                 header_up Location {http.response.header.Location}
             }
         }
-		import error_page
     }
 }
 
