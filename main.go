@@ -51,7 +51,7 @@ func main() {
 	router := gin.Default()
 
 	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "https://ghproxy0rtt.1888866.xyz/")
+		c.Redirect(http.StatusMovedPermanently, "https://ghproxy0rtt.1888866.xyz/")
 	})
 
 	router.NoRoute(noRouteHandler(config))
@@ -145,7 +145,7 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 		size, err := strconv.Atoi(contentLength)
 		if err == nil && size > config.SizeLimit {
 			finalURL := resp.Request.URL.String()
-			c.Redirect(http.StatusFound, finalURL)
+			c.Redirect(http.StatusMovedPermanently, finalURL)
 			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
 			return
 		}
