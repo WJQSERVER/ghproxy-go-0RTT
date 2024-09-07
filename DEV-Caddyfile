@@ -95,7 +95,7 @@
         import cache 0s 12h
     }
 
-    route /v2/* {
+    route /v2* {
         reverse_proxy https://registry-1.docker.io {
             header_up Host registry-1.docker.io
             header_up X-Real-IP {remote}
