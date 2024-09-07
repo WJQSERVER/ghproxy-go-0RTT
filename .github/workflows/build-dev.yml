@@ -13,7 +13,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version: 1.23.0
+          go-version: 1.23.1
       - name: Build
         run: go build -o ghproxy ./main.go
       - name: Package
