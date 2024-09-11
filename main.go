@@ -54,6 +54,11 @@ func main() {
 		c.Redirect(http.StatusMovedPermanently, "https://ghproxy0rtt.1888866.xyz/")
 	})
 
+	//health check
+	router.GET("/api/healthcheck", func(c *gin.Context) {
+		c.String(http.StatusOK, "OK")
+	})
+
 	router.NoRoute(noRouteHandler(config))
 
 	err = router.Run(fmt.Sprintf("%s:%d", config.Host, config.Port))
