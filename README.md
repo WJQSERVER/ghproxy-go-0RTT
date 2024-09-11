@@ -45,6 +45,18 @@ docker run -p 8078:80 -v ./ghproxy/log/run:/data/ghproxy/log -v ./ghproxy/log/ca
 
     参看[docker-compose.yml](https://github.com/WJQSERVER/ghproxy-go-0RTT/blob/main/docker-compose.yml)
 
+### 外部配置文件
+
+本项目采用config.yaml作为外部配置,默认配置如下
+使用Docker部署时,慎重修改config.yaml,以免造成不必要的麻烦
+
+```
+port: 8080 # 监听端口
+host: "127.0.0.1" # 监听地址
+sizelimit: 131072000 # 125MB (文件大小默认限制)
+logfilepath: "/data/ghproxy/log/ghproxy-0rtt.log" # 日志存储目录
+```
+
 ### Caddy反代配置
 
 ```
