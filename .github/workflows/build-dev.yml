@@ -24,7 +24,7 @@ jobs:
       - name: Package
         run: sudo tar -czvf ghproxy.tar.gz ./ghproxy # 将可执行文件打包为 tar.gz
       - name: Upload to GitHub Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: ghproxy
           path: ./ghproxy.tar.gz
