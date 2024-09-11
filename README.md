@@ -55,6 +55,7 @@ port: 8080 # 监听端口
 host: "127.0.0.1" # 监听地址
 sizelimit: 131072000 # 125MB (文件大小默认限制)
 logfilepath: "/data/ghproxy/log/ghproxy-0rtt.log" # 日志存储目录
+CorsAllowOrigins: true # 是否允许跨域请求
 ```
 
 ### Caddy反代配置
