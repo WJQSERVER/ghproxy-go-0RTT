@@ -11,6 +11,7 @@ type Config struct {
 	Host        string `yaml:"host"`
 	SizeLimit   int    `yaml:"sizelimit"`
 	LogFilePath string `yaml:"logfilepath"`
+	CORSOrigin  bool   `yaml:"CorsAllowOrigins"`
 }
 
 // LoadConfig 从 YAML 配置文件加载配置

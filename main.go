@@ -155,6 +155,10 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 	resp.Header.Del("Referrer-Policy")
 	resp.Header.Del("Strict-Transport-Security")
 
+	if config.CORSOrigin {
+		resp.Header.Set("Access-Control-Allow-Origin", "*")
+	}
+
 	for key, values := range resp.Header {
 		for _, value := range values {
 			c.Header(key, value)
