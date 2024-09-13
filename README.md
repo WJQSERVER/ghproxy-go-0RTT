@@ -76,9 +76,9 @@ example.com {
 
 ### TODO
 
-- [ ] 允许更多参数通过config结构传入
+- [x] 允许更多参数通过config结构传入
 - [ ] 改进程序效率
 
 ### BETA
 
-- [x] Docker Pull 代理
+- [x] Docker Pull 代理 (DEV版本内实现)
