@@ -129,7 +129,7 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 			req.Header.Add(key, value)
 		}
 	}
-	//req.Header.Del("Host")
+	req.Header.Del("Host")
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36")
 
 	//resp, err := http.DefaultClient.Do(req)
@@ -137,7 +137,6 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 		Timeout: 10 * time.Second,
 	}
 	resp, err := client.Do(req)
-	//resp, err = client.Do(req)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		log.Printf("Failed to send request: %v", err)
