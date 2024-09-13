@@ -3,8 +3,10 @@ name: 打包Docker镜像
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "*"
+    branches:
+      - 'main'
+    paths:
+      - 'VERSION'
 
 jobs:
   docker:
@@ -16,6 +18,9 @@ jobs:
       - name: Load VERSION
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_ENV  
 
+      - name: Wait For Complie
+        run: sleep 180s
+        
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
