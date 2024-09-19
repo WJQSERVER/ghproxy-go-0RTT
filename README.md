@@ -11,6 +11,8 @@
 
 **本项目自v0.2.0版本开始,对底层核心实现代码进行重构,彻底脱离原有实现**
 
+**具体更新记录请参看[更新日志](https://github.com/WJQSERVER/ghproxy-go-0RTT/blob/main/CHANGELOG.md)**
+
 弃用[原实现](https://github.com/0-RTT/ghproxy-go)过于依赖的jiasu.in网页,更换前端界面,并增加Docker支持,并增加了高频请求限制,以避免CC
 
 使用Caddy实现了符合[RFC 7234](https://httpwg.org/specs/rfc7234.html)的HTTP Cache
