@@ -128,15 +128,20 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 		//proxyGit(c, rawPath, config)
 		switch {
 		case exps[0].MatchString(rawPath):
-			proxy(c, rawPath, config)
+			log.Printf("Matched EXPS[0] - USE proxy-chrome")
+			proxychrome(c, rawPath, config)
 		case exps[1].MatchString(rawPath):
-			proxy(c, rawPath, config)
+			log.Printf("Matched EXPS[1] - USE proxy-chrome")
+			proxychrome(c, rawPath, config)
 		case exps[2].MatchString(rawPath):
+			log.Printf("Matched EXPS[2] - USE proxy-git")
 			proxyGit(c, rawPath, config)
 		case exps[3].MatchString(rawPath):
-			proxy(c, rawPath, config)
+			log.Printf("Matched EXPS[3] - USE proxy-chrome")
+			proxychrome(c, rawPath, config)
 		case exps[4].MatchString(rawPath):
-			proxy(c, rawPath, config)
+			log.Printf("Matched EXPS[4] - USE proxy-chrome")
+			proxychrome(c, rawPath, config)
 		default:
 			c.String(http.StatusForbidden, "Invalid input.")
 			return
@@ -302,7 +307,7 @@ func handleResponseSize(resp *req.Response, config *config.Config, c *gin.Contex
 }
 
 // 使用req库伪装chrome浏览器
-func proxy(c *gin.Context, u string, config *config.Config) {
+func proxychrome(c *gin.Context, u string, config *config.Config) {
 	method := c.Request.Method
 	client := req.C().
 		SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36").
