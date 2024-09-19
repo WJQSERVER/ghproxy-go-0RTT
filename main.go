@@ -152,7 +152,7 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 		log.Printf("Request: %s %s", c.Request.Method, rawPath)
 		log.Printf("Matches: %v", matches)
 
-		proxy(c, rawPath, config)
+		proxyGit(c, rawPath, config)
 	}
 }
 
@@ -217,6 +217,77 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 		return
 	}
 }*/
+
+// 使用req库伪装git
+func proxyGit(c *gin.Context, u string, config *config.Config) {
+	client := req.C().
+		SetUserAgent("git/2.33.1")
+
+	// 读取请求体
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
+		log.Printf("Failed to read request body: %v", err)
+		return
+	}
+	defer c.Request.Body.Close()
+
+	// 创建新的请求
+	req := client.R().
+		SetBody(body).
+		SetHeader("User-Agent", "git/2.33.1")
+
+	// 复制请求头
+	for key, values := range c.Request.Header {
+		for _, value := range values {
+			req.SetHeader(key, value)
+		}
+	}
+
+	// 发送请求
+	resp, err := req.Get(u)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
+		log.Printf("Failed to send request: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	contentLength := resp.Header.Get("Content-Length")
+	if contentLength != "" {
+		size, err := strconv.Atoi(contentLength)
+		if err == nil && size > config.SizeLimit {
+			finalURL := resp.Request.URL.String()
+			c.Redirect(http.StatusMovedPermanently, finalURL)
+			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
+			return
+		}
+	}
+
+	// 删除不必要的响应头
+	resp.Header.Del("Content-Security-Policy")
+	resp.Header.Del("Referrer-Policy")
+	resp.Header.Del("Strict-Transport-Security")
+
+	// 复制响应头
+	for key, values := range resp.Header {
+		for _, value := range values {
+			c.Header(key, value)
+		}
+	}
+
+	if config.CORSOrigin {
+		c.Header("Access-Control-Allow-Origin", "*")
+	} else {
+		c.Header("Access-Control-Allow-Origin", "")
+	}
+
+	c.Status(resp.StatusCode)
+	if _, err := io.Copy(c.Writer, resp.Body); err != nil {
+		log.Printf("Failed to copy response body: %v", err)
+		return
+	}
+}
 
 // 使用req库伪装chrome浏览器
 func proxy(c *gin.Context, u string, config *config.Config) {
