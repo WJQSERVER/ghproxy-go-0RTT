@@ -14,6 +14,7 @@ import (
 	"ghproxy/config"
 
 	"github.com/gin-gonic/gin"
+	"github.com/imroc/req/v3"
 )
 
 var (
@@ -155,7 +156,7 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 	}
 }
 
-func proxy(c *gin.Context, u string, config *config.Config) {
+/*func proxy(c *gin.Context, u string, config *config.Config) {
 	req, err := http.NewRequest(c.Request.Method, u, c.Request.Body)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
@@ -213,6 +214,80 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 
 	c.Status(resp.StatusCode)
 	if _, err := io.Copy(c.Writer, resp.Body); err != nil {
+		return
+	}
+}*/
+
+// 使用req库伪装chrome浏览器
+func proxy(c *gin.Context, u string, config *config.Config) {
+	client := req.C().
+		SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36").
+		SetTLSFingerprintChrome()
+
+	client.ImpersonateChrome()
+
+	// 读取请求体
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
+		log.Printf("Failed to read request body: %v", err)
+		return
+	}
+	defer c.Request.Body.Close()
+
+	// 创建新的请求
+	req := client.R().
+		SetBody(body).
+		SetHeader("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36")
+
+	// 复制请求头
+	for key, values := range c.Request.Header {
+		for _, value := range values {
+			req.SetHeader(key, value)
+		}
+	}
+
+	// 发送请求
+	resp, err := req.Get(u)
+	if err != nil {
+		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
+		log.Printf("Failed to send request: %v", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	contentLength := resp.Header.Get("Content-Length")
+	if contentLength != "" {
+		size, err := strconv.Atoi(contentLength)
+		if err == nil && size > config.SizeLimit {
+			finalURL := resp.Request.URL.String()
+			c.Redirect(http.StatusMovedPermanently, finalURL)
+			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
+			return
+		}
+	}
+
+	// 删除不必要的响应头
+	resp.Header.Del("Content-Security-Policy")
+	resp.Header.Del("Referrer-Policy")
+	resp.Header.Del("Strict-Transport-Security")
+
+	// 复制响应头
+	for key, values := range resp.Header {
+		for _, value := range values {
+			c.Header(key, value)
+		}
+	}
+
+	if config.CORSOrigin {
+		c.Header("Access-Control-Allow-Origin", "*")
+	} else {
+		c.Header("Access-Control-Allow-Origin", "")
+	}
+
+	c.Status(resp.StatusCode)
+	if _, err := io.Copy(c.Writer, resp.Body); err != nil {
+		log.Printf("Failed to copy response body: %v", err)
 		return
 	}
 }

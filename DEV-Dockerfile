@@ -1,4 +1,4 @@
-FROM wjqserver/caddy:latest
+FROM wjqserver/caddy:daily
 
 RUN mkdir -p /data/www
 RUN mkdir -p /data/ghproxy/config
