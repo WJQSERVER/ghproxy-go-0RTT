@@ -26,26 +26,66 @@ var (
 	}
 )
 
-func main() {
-	//加载配置
-	config, err := config.LoadConfig("/data/ghproxy/config/config.yaml")
-	if err != nil {
-		fmt.Printf("Failed to load config: %v", err)
-		return
-	}
-	fmt.Printf("Loaded config: %v", config)
+var (
+	router *gin.Engine
+	cfg    *config.Config
+)
 
+func init() {
+	// 加载配置
+	var err error
+	cfg, err = config.LoadConfig("/data/ghproxy/config/config.yaml")
+	if err != nil {
+		log.Fatalf("Failed to load config: %v", err)
+	}
+	fmt.Printf("Loaded config: %v\n", cfg)
+
+	// 设置 Gin 模式
+	gin.SetMode(gin.ReleaseMode)
+
+	// 初始化路由
+	router = gin.Default()
+
+	// 定义路由
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusMovedPermanently, "https://ghproxy0rtt.1888866.xyz/")
+	})
+
+	// 健康检查
+	router.GET("/api/healthcheck", func(c *gin.Context) {
+		c.String(http.StatusOK, "OK")
+	})
+
+	// 未匹配路由处理
+	router.NoRoute(noRouteHandler(cfg))
+}
+
+func main() {
 	//初始化日志
-	logFile, err := os.OpenFile(config.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		fmt.Printf("Log Initialization Failed: > %s", err)
-		fmt.Printf("Failed to open log file: %s", config.LogFilePath)
+		fmt.Printf("Failed to open log file: %s", cfg.LogFilePath)
 		fmt.Printf("Please check the log file path and permissions.")
 	} else {
 		defer logFile.Close()
 		log.SetOutput(logFile)
 		log.Println("Log Initialization Complete")
 	}
+	// 启动服务器
+	err = router.Run(fmt.Sprintf("%s:%d", cfg.Host, cfg.Port))
+	if err != nil {
+		log.Fatalf("Error starting server: %v\n", err)
+	}
+
+	fmt.Println("Program finished")
+	//加载配置
+	/*config, err := config.LoadConfig("/data/ghproxy/config/config.yaml")
+	if err != nil {
+		fmt.Printf("Failed to load config: %v", err)
+		return
+	}
+	fmt.Printf("Loaded config: %v", config)
 
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
@@ -65,7 +105,7 @@ func main() {
 	if err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
-	fmt.Println("Program finished")
+	fmt.Println("Program finished")*/
 }
 
 //reserved for future use
