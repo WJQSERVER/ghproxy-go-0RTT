@@ -80,33 +80,6 @@ func main() {
 	}
 
 	fmt.Println("Program finished")
-	//加载配置
-	/*config, err := config.LoadConfig("/data/ghproxy/config/config.yaml")
-	if err != nil {
-		fmt.Printf("Failed to load config: %v", err)
-		return
-	}
-	fmt.Printf("Loaded config: %v", config)
-
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.Default()
-
-	router.GET("/", func(c *gin.Context) {
-		c.Redirect(http.StatusMovedPermanently, "https://ghproxy0rtt.1888866.xyz/")
-	})
-
-	//health check
-	router.GET("/api/healthcheck", func(c *gin.Context) {
-		c.String(http.StatusOK, "OK")
-	})
-
-	router.NoRoute(noRouteHandler(config))
-
-	err = router.Run(fmt.Sprintf("%s:%d", config.Host, config.Port))
-	if err != nil {
-		fmt.Printf("Error starting server: %v\n", err)
-	}
-	fmt.Println("Program finished")*/
 }
 
 //reserved for future use
@@ -152,7 +125,22 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 		log.Printf("Request: %s %s", c.Request.Method, rawPath)
 		log.Printf("Matches: %v", matches)
 
-		proxyGit(c, rawPath, config)
+		//proxyGit(c, rawPath, config)
+		switch {
+		case exps[0].MatchString(rawPath):
+			proxy(c, rawPath, config)
+		case exps[1].MatchString(rawPath):
+			proxy(c, rawPath, config)
+		case exps[2].MatchString(rawPath):
+			proxyGit(c, rawPath, config)
+		case exps[3].MatchString(rawPath):
+			proxy(c, rawPath, config)
+		case exps[4].MatchString(rawPath):
+			proxy(c, rawPath, config)
+		default:
+			c.String(http.StatusForbidden, "Invalid input.")
+			return
+		}
 	}
 }
 
@@ -315,6 +303,7 @@ func handleResponseSize(resp *req.Response, config *config.Config, c *gin.Contex
 
 // 使用req库伪装chrome浏览器
 func proxy(c *gin.Context, u string, config *config.Config) {
+	method := c.Request.Method
 	client := req.C().
 		SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36").
 		SetTLSFingerprintChrome()
@@ -342,8 +331,8 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 		}
 	}
 
-	// 发送请求
-	resp, err := req.Get(u)
+	// 发送请求并处理响应
+	resp, err := sendRequest(req, method, u)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		log.Printf("Failed to send request: %v", err)
@@ -351,15 +340,10 @@ func proxy(c *gin.Context, u string, config *config.Config) {
 	}
 	defer resp.Body.Close()
 
-	contentLength := resp.Header.Get("Content-Length")
-	if contentLength != "" {
-		size, err := strconv.Atoi(contentLength)
-		if err == nil && size > config.SizeLimit {
-			finalURL := resp.Request.URL.String()
-			c.Redirect(http.StatusMovedPermanently, finalURL)
-			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
-			return
-		}
+	// 检查响应内容长度并处理重定向
+	if err := handleResponseSize(resp, config, c); err != nil {
+		log.Printf("Error handling response size: %v", err)
+		return
 	}
 
 	// 删除不必要的响应头
