@@ -9,6 +9,8 @@
 
 ## 起源与项目特点
 
+**本项目自v0.2.0版本开始,对底层核心实现代码进行重构,彻底脱离原有实现**
+
 弃用[原实现](https://github.com/0-RTT/ghproxy-go)过于依赖的jiasu.in网页,更换前端界面,并增加Docker支持,并增加了高频请求限制,以避免CC
 
 使用Caddy实现了符合[RFC 7234](https://httpwg.org/specs/rfc7234.html)的HTTP Cache
@@ -77,7 +79,7 @@ example.com {
 ### TODO
 
 - [x] 允许更多参数通过config结构传入
-- [ ] 改进程序效率
+- [x] 改进程序效率
 
 ### BETA
 
