@@ -220,8 +220,8 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 
 // 使用req库伪装git
 func proxyGit(c *gin.Context, u string, config *config.Config) {
-	client := req.C().
-		SetUserAgent("git/2.33.1")
+	method := c.Request.Method
+	client := req.C().SetUserAgent("git/2.33.1")
 
 	// 读取请求体
 	body, err := io.ReadAll(c.Request.Body)
@@ -233,9 +233,7 @@ func proxyGit(c *gin.Context, u string, config *config.Config) {
 	defer c.Request.Body.Close()
 
 	// 创建新的请求
-	req := client.R().
-		SetBody(body).
-		SetHeader("User-Agent", "git/2.33.1")
+	req := client.R().SetBody(body)
 
 	// 复制请求头
 	for key, values := range c.Request.Header {
@@ -244,8 +242,8 @@ func proxyGit(c *gin.Context, u string, config *config.Config) {
 		}
 	}
 
-	// 发送请求
-	resp, err := req.Get(u)
+	// 发送请求并处理响应
+	resp, err := sendRequest(req, method, u)
 	if err != nil {
 		c.String(http.StatusInternalServerError, fmt.Sprintf("server error %v", err))
 		log.Printf("Failed to send request: %v", err)
@@ -253,15 +251,10 @@ func proxyGit(c *gin.Context, u string, config *config.Config) {
 	}
 	defer resp.Body.Close()
 
-	contentLength := resp.Header.Get("Content-Length")
-	if contentLength != "" {
-		size, err := strconv.Atoi(contentLength)
-		if err == nil && size > config.SizeLimit {
-			finalURL := resp.Request.URL.String()
-			c.Redirect(http.StatusMovedPermanently, finalURL)
-			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
-			return
-		}
+	// 检查响应内容长度并处理重定向
+	if err := handleResponseSize(resp, config, c); err != nil {
+		log.Printf("Error handling response size: %v", err)
+		return
 	}
 
 	// 删除不必要的响应头
@@ -287,6 +280,37 @@ func proxyGit(c *gin.Context, u string, config *config.Config) {
 		log.Printf("Failed to copy response body: %v", err)
 		return
 	}
+}
+
+// 发送请求并返回响应
+func sendRequest(req *req.Request, method, url string) (*req.Response, error) {
+	switch method {
+	case "GET":
+		return req.Get(url)
+	case "POST":
+		return req.Post(url)
+	case "PUT":
+		return req.Put(url)
+	case "DELETE":
+		return req.Delete(url)
+	default:
+		return nil, fmt.Errorf("unsupported method: %s", method)
+	}
+}
+
+// 处理响应内容长度
+func handleResponseSize(resp *req.Response, config *config.Config, c *gin.Context) error {
+	contentLength := resp.Header.Get("Content-Length")
+	if contentLength != "" {
+		size, err := strconv.Atoi(contentLength)
+		if err == nil && size > config.SizeLimit {
+			finalURL := resp.Request.URL.String()
+			c.Redirect(http.StatusMovedPermanently, finalURL)
+			log.Printf("%s - Redirecting to %s due to size limit (%d bytes)", time.Now().Format("2006-01-02 15:04:05"), finalURL, size)
+			return fmt.Errorf("response size exceeds limit")
+		}
+	}
+	return nil
 }
 
 // 使用req库伪装chrome浏览器
