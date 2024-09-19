@@ -128,19 +128,19 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 		//proxyGit(c, rawPath, config)
 		switch {
 		case exps[0].MatchString(rawPath):
-			log.Printf("Matched EXPS[0] - USE proxy-chrome")
+			log.Printf("%s Matched EXPS[0] - USE proxy-chrome", rawPath)
 			proxychrome(c, rawPath, config)
 		case exps[1].MatchString(rawPath):
-			log.Printf("Matched EXPS[1] - USE proxy-chrome")
+			log.Printf("%s Matched EXPS[1] - USE proxy-chrome", rawPath)
 			proxychrome(c, rawPath, config)
 		case exps[2].MatchString(rawPath):
-			log.Printf("Matched EXPS[2] - USE proxy-git")
+			log.Printf("%s Matched EXPS[2] - USE proxy-git", rawPath)
 			proxyGit(c, rawPath, config)
 		case exps[3].MatchString(rawPath):
-			log.Printf("Matched EXPS[3] - USE proxy-chrome")
+			log.Printf("%s Matched EXPS[3] - USE proxy-chrome", rawPath)
 			proxychrome(c, rawPath, config)
 		case exps[4].MatchString(rawPath):
-			log.Printf("Matched EXPS[4] - USE proxy-chrome")
+			log.Printf("%s Matched EXPS[4] - USE proxy-chrome", rawPath)
 			proxychrome(c, rawPath, config)
 		default:
 			c.String(http.StatusForbidden, "Invalid input.")
@@ -214,6 +214,7 @@ func noRouteHandler(config *config.Config) gin.HandlerFunc {
 // 使用req库伪装git
 func proxyGit(c *gin.Context, u string, config *config.Config) {
 	method := c.Request.Method
+	log.Printf("%s Method: %s", u, method)
 	client := req.C().SetUserAgent("git/2.33.1")
 
 	// 读取请求体
@@ -309,6 +310,7 @@ func handleResponseSize(resp *req.Response, config *config.Config, c *gin.Contex
 // 使用req库伪装chrome浏览器
 func proxychrome(c *gin.Context, u string, config *config.Config) {
 	method := c.Request.Method
+	log.Printf("%s Method: %s", u, method)
 	client := req.C().
 		SetUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36").
 		SetTLSFingerprintChrome()
