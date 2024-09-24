@@ -11,6 +11,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      OUTPUT_BINARY: ghproxy  # 定义输出文件名变量
+      OUTPUT_ARCHIVE: ghproxy.tar.gz  # 定义输出包名变量
+
     steps:
       - uses: actions/checkout@v3
       - name: Load VERSION
@@ -20,22 +24,22 @@ jobs:
         with:
           go-version: 1.23.1
       - name: Build
-        run: go build -o ghproxy ./main.go
+        run: |
+          go build -o $OUTPUT_BINARY ./main.go
       - name: Package
-        run: sudo tar -czvf ghproxy.tar.gz ./ghproxy # 将可执行文件打包为 tar.gz
+        run: |
+          tar -czvf $OUTPUT_ARCHIVE ./$OUTPUT_BINARY # 将可执行文件打包为 tar.gz
       - name: Upload to GitHub Artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: ghproxy
-          path: ./ghproxy.tar.gz
+          name: $OUTPUT_BINARY
+          path: ./$OUTPUT_ARCHIVE
       - name: 上传至Release
         id: create_release
         uses: ncipollo/release-action@v1
         with:
           name: ${{ env.VERSION }}
-          artifacts: ./ghproxy.tar.gz, ./ghproxy
+          artifacts: ./$OUTPUT_ARCHIVE
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.VERSION }}
           allowUpdates: true
-        env:
-          export PATH: $PATH:/usr/local/go/bin
