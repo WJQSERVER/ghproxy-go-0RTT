@@ -1,5 +1,7 @@
 # GhProxy-Go-0RTT
 
+## [WJQSERVER-STUDIO/ghproxy](https://github.com/WJQSERVER-STUDIO/ghproxy)做出了更佳实现,本仓库将存档
+
 ![pull](https://img.shields.io/docker/pulls/wjqserver/ghproxy-0rtt.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/WJQSERVER/ghproxy-go-0RTT)](https://goreportcard.com/report/github.com/WJQSERVER/ghproxy-go-0RTT)
 
